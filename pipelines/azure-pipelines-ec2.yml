@@ -1,0 +1,31 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- checkout: self
+
+- task: CopyFilesOverSSH@0
+  displayName: "Copy application code to EC2"
+  inputs:
+    sshEndpoint: ec2-ssh-connection
+    sourceFolder: app
+    targetFolder: /home/ubuntu/app
+
+- task: CopyFilesOverSSH@0
+  displayName: "Copy EC2 deployment scripts"
+  inputs:
+    sshEndpoint: ec2-ssh-connection
+    sourceFolder: ec2
+    targetFolder: /home/ubuntu/ec2
+
+- task: SSH@0
+  displayName: "Run deployment script on EC2"
+  inputs:
+    sshEndpoint: ec2-ssh-connection
+    runOptions: inline
+    inline: |
+      chmod +x /home/ubuntu/ec2/deploy.sh
+      bash /home/ubuntu/ec2/deploy.sh
