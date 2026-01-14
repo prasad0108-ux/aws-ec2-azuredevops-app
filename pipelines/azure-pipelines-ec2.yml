@@ -7,13 +7,15 @@ pool:
 steps:
 - checkout: self
 
+# Copy the whole app folder (not just its contents)
 - task: CopyFilesOverSSH@0
   displayName: "Copy application code to EC2"
   inputs:
     sshEndpoint: ec2-ssh-connection
     sourceFolder: app
-    targetFolder: /home/ubuntu/app
+    targetFolder: /home/ubuntu
 
+# Copy deployment scripts
 - task: CopyFilesOverSSH@0
   displayName: "Copy EC2 deployment scripts"
   inputs:
@@ -21,6 +23,7 @@ steps:
     sourceFolder: ec2
     targetFolder: /home/ubuntu/ec2
 
+# Run deployment
 - task: SSH@0
   displayName: "Run deployment script on EC2"
   inputs:
